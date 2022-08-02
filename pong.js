@@ -12,11 +12,11 @@ const fps = 60;
 
 class Balle {
 
-    constructor(direction) {
+    constructor(x, y, direction) {
         this.couleur = '#000';
         this.taille = 10;
-        this.x = 100;
-        this.y = 100;
+        this.x = x;
+        this.y = y;
         this.direction = Math.PI * direction * 2;
         this.vitesse = 10;
     }
@@ -59,7 +59,7 @@ class Baton {
 }
 
 
-var balle = new Balle(.02);
+var balle = new Balle(canvasPong.width / 2, canvasPong.height / 2, Math.random());
 var batonGauche = new Baton(50, 100);
 var batonDroite = new Baton(canvasPong.width - 50, 100);
 
