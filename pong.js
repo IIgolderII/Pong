@@ -38,7 +38,7 @@ class Balle {
 
             viesDroite--;
 
-        } else if (this.x - this.taille <= batonGauche.x + batonGauche.largeur && this.y + this.taille >= batonGauche.y && this.y - this.taille <= batonGauche.y + batonGauche.hauteur) {  // baton gauche
+        } else if (this.x - this.taille <= batonGauche.x + batonGauche.largeur / 2 && this.y + this.taille >= batonGauche.y && this.y - this.taille <= batonGauche.y + batonGauche.hauteur) {  // baton gauche
 
             this.directionX = Math.abs(this.directionX);
 
@@ -49,7 +49,7 @@ class Balle {
                 this.directionY += .4;
             }
 
-        } else if (this.x + this.taille >= batonDroite.x && this.y + this.taille >= batonDroite.y && this.y - this.taille <= batonDroite.y + batonDroite.hauteur) {  // baton droit
+        } else if (this.x + this.taille >= batonDroite.x - batonGauche.largeur / 2 && this.y + this.taille >= batonDroite.y && this.y - this.taille <= batonDroite.y + batonDroite.hauteur) {  // baton droit
 
             this.directionX = Math.abs(this.directionX) * -1;
 
@@ -62,7 +62,7 @@ class Balle {
 
         }
 
-        if (this.y <= 0 || this.y >= canvasPong.height) {
+        if (this.y - this.taille <= 0 || this.y + this.taille >= canvasPong.height) {
             this.directionY *= -1;
         }
 
