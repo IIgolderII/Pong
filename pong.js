@@ -42,6 +42,8 @@ class Balle {
 
             this.directionX = Math.abs(this.directionX);
 
+            this.directionY += batonGauche.ay;
+
             if (batonGauche.up && this.directionY > -.5) {
                 this.directionY -= .4;
             }
@@ -85,11 +87,13 @@ class Baton {
         this.couleur = '#000';
         this.largeur = 20;
         this.hauteur = 200;
+        this.ay = 0;
         this.x = x;
         this.y = y;
         this.up = false;
         this.down = false;
         this.vitesse = 1;
+        this.acceleration = .1;
 
         document.addEventListener('keydown', (e) => {
 
@@ -129,13 +133,31 @@ class Baton {
 
     bouger() {
 
-        if (this.up && this.y > 0) {
-            this.y -= this.vitesse * 1000 / fps;
+        if (this.up) {
+            this.ay -= this.acceleration;
+            if (this.ay < -this.vitesse) {
+                this.ay = -this.vitesse;
+            }
+        } else {
+
         }
 
-        if (this.down && this.y + this.hauteur < canvasPong.height) {
-            this.y += this.vitesse * 1000 / fps;
+        if (this.down) {
+            this.ay += this.acceleration;
+            if (this.ay > this.vitesse) {
+                this.ay = this.vitesse;
+            }
         }
+
+        if (this.ay < 0 && this.y > 0) {
+            this.y += this.ay * 1000 / fps;
+        }
+
+        if (this.ay > 0 && this.y + this.hauteur < canvasPong.height) {
+            this.y += this.ay * 1000 / fps;
+        }
+
+        this.ay *= .9;
 
     }
 
