@@ -42,25 +42,29 @@ class Balle {
 
             this.directionX = Math.abs(this.directionX);
 
-            this.directionY += batonGauche.ay;
+            this.directionY += (batonGauche.ay * 2 - 1) / 3;
 
-            if (batonGauche.up && this.directionY > -.5) {
-                this.directionY -= .4;
+            if (this.directionY < -.5) {
+                this.directionY = -.5;
             }
-            if (batonGauche.down && this.directionY < .5) {
-                this.directionY += .4;
+            if (this.directionY > .5) {
+                this.directionY = .5;
             }
 
         } else if (this.x + this.taille >= batonDroite.x - batonGauche.largeur / 2 && this.y + this.taille >= batonDroite.y && this.y - this.taille <= batonDroite.y + batonDroite.hauteur) {  // baton droit
 
             this.directionX = Math.abs(this.directionX) * -1;
 
-            if (batonDroite.up && this.directionY > -.5) {
-                this.directionY -= .4;
+            console.log(this.directionY);
+            this.directionY += (batonDroite.ay * 2 - 1) / 3;
+
+            if (this.directionY < -.5) {
+                this.directionY = -.5;
             }
-            if (batonDroite.down && this.directionY < .5) {
-                this.directionY += .4;
+            if (this.directionY > .5) {
+                this.directionY = .5;
             }
+            console.log(this.directionY);
 
         }
 
