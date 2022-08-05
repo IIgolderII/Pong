@@ -14,14 +14,13 @@ class Balle {
 
     constructor(x, y, directionX, directionY) {
 
-        this.couleur = '#000';
+        this.couleur = '#fff';
         this.taille = 15;
         this.x = x;
         this.y = y;
         this.directionX = directionX;
         this.directionY = directionY;
         this.vitesse = .5;
-
     }
 
     bouger() {
@@ -42,36 +41,35 @@ class Balle {
 
             this.directionX = Math.abs(this.directionX);
 
-            this.directionY += batonGauche.ay / 2;
+            this.directionY += batonGauche.ay * .6;
 
-            if (this.directionY < -1) {
-                this.directionY = -1;
+            if (this.directionY < -.8) {
+                this.directionY = -.8;
             }
-            if (this.directionY > 1) {
-                this.directionY = 1;
+            if (this.directionY > .8) {
+                this.directionY = .8;
             }
 
         } else if (this.x + this.taille >= batonDroite.x - batonGauche.largeur / 2 && this.y + this.taille >= batonDroite.y && this.y - this.taille <= batonDroite.y + batonDroite.hauteur) {  // baton droit
 
             this.directionX = Math.abs(this.directionX) * -1;
 
-            this.directionY += batonDroite.ay / 2;
+            this.directionY += batonDroite.ay * .6;
 
-            if (this.directionY < -1) {
-                this.directionY = -1;
+            if (this.directionY < -.8) {
+                this.directionY = -.8;
             }
-            if (this.directionY > 1) {
-                this.directionY = 1;
+            if (this.directionY > .8) {
+                this.directionY = .8;
             }
-
         }
 
         if (this.y - this.taille <= 0 || this.y + this.taille >= canvasPong.height) {
             this.directionY *= -1;
         }
 
-        this.x += this.directionX * this.vitesse * 1000 / fps; // revoir vitesse selon axe
-        this.y += this.directionY * this.vitesse * 1000 / fps;
+        this.y += Math.sin(this.directionY) * this.vitesse * 1000 / fps;
+        this.x += this.directionX * Math.sqrt(Math.pow(this.vitesse, 2) - Math.pow(Math.sin(this.directionY) * this.vitesse, 2)) * 1000 / fps;
     }
 
     dessiner() {
@@ -84,53 +82,83 @@ class Balle {
 
 class Baton {
 
-    constructor(x, y, upKey, downKey) {
+    constructor(cote, couleur) {
 
-        this.couleur = '#000';
         this.largeur = 20;
-        this.hauteur = 200;
+        this.hauteur = canvasPong.height * .25;
         this.ay = 0;
-        this.x = x;
-        this.y = y;
         this.up = false;
         this.down = false;
         this.vitesse = 1;
         this.acceleration = .1;
 
+        switch (cote) {
+            case 'gauche':
+                this.x = 50;
+                this.y = 100;
+                this.upKey = 'z';
+                this.downKey = 's';
+                break;
+
+            case 'droite':
+                this.x = canvasPong.width - 50;
+                this.y = 100;
+                this.upKey = 'ArrowUp';
+                this.downKey = 'ArrowDown';
+                break;
+
+            default:
+                clearInterval(jeu);
+                break;
+        }
+
+        switch (couleur) {
+            case 'bleu':
+                this.couleur = '#009';
+                this.hauteur += canvasPong.height * .08;
+                break;
+
+            case 'jaune':
+                this.couleur = '#ff0';
+                this.vitesse += 1;
+                break;
+
+            default:
+                this.couleur = '#fff';
+                break;
+        }
+
         document.addEventListener('keydown', (e) => {
 
             switch (e.key) {
-                case upKey:
+                case this.upKey:
                     this.up = true;
                     break;
 
-                case downKey:
+                case this.downKey:
                     this.down = true;
                     break;
 
                 default:
                     break;
             }
-
         });
 
         document.addEventListener('keyup', (e) => {
 
             switch (e.key) {
-                case upKey:
+                case this.upKey:
                     this.up = false;
                     break;
 
-                case downKey:
+                case this.downKey:
                     this.down = false;
                     break;
 
                 default:
                     break;
             }
-
         });
-
     }
 
     bouger() {
@@ -151,6 +179,10 @@ class Baton {
             }
         }
 
+        if (!this.up && !this.down) {
+            this.ay = Math.round((this.ay * .8) * 1000) / 1000;
+        }
+
         if (this.ay < 0 && this.y > 0) {
             this.y += this.ay * 1000 / fps;
         }
@@ -159,8 +191,8 @@ class Baton {
             this.y += this.ay * 1000 / fps;
         }
 
-        this.ay = Math.round((this.ay * .9) * 1000) / 1000;
-
+        // this.ay = Math.round((this.ay * .9) * 1000) / 1000;
+        console.log(this.ay);
     }
 
     dessiner() {
@@ -169,14 +201,13 @@ class Baton {
         ctxPong.fillStyle = this.couleur;
         ctxPong.fillRect(this.x - this.largeur / 2, this.y, this.largeur, this.hauteur);
         ctxPong.fill();
-
     }
 }
 
 
 var balle = new Balle(canvasPong.width / 2, canvasPong.height / 2, 1, Math.random() * 2 - 1);
-var batonGauche = new Baton(50, 100, 'z', 's');
-var batonDroite = new Baton(canvasPong.width - 50, 100, 'ArrowUp', 'ArrowDown');
+var batonGauche = new Baton('gauche', 'jaune');
+var batonDroite = new Baton('droite', 'bleu');
 var viesGauche = 10;
 var viesDroite = 10;
 
@@ -187,12 +218,17 @@ var jeu = setInterval(function () {
     batonDroite.bouger();
 
     ctxPong.clearRect(0, 0, canvasPong.width, canvasPong.height);
+    ctxPong.beginPath();
+    ctxPong.fillStyle = '#000';
+    ctxPong.fillRect(0, 0, canvasPong.width, canvasPong.height);
+    ctxPong.fill();
     balle.dessiner();
     batonGauche.dessiner();
     batonDroite.dessiner();
 
 
     ctxPong.font = '48px serif';
+    ctxPong.fillStyle = '#fff';
     ctxPong.fillText(viesGauche + ' | ' + viesDroite, canvasPong.width / 2, 60);
 
     if (viesGauche <= 0 || viesDroite <= 0) {
