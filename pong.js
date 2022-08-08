@@ -20,7 +20,8 @@ class Balle {
         this.y = y;
         this.directionX = directionX;
         this.directionY = directionY;
-        this.vitesse = .5;
+        this.vitesseDefaut = .5;
+        this.vitesse = this.vitesseDefaut;
     }
 
     bouger() {
@@ -41,27 +42,44 @@ class Balle {
 
             this.directionX = Math.abs(this.directionX);
 
-            this.directionY += batonGauche.ay * .6;
-
-            if (this.directionY < -.8) {
-                this.directionY = -.8;
+            if (batonGauche.up) {
+                this.directionY -= .5;
             }
-            if (this.directionY > .8) {
-                this.directionY = .8;
+
+            if (batonGauche.down) {
+                this.directionY += .5;
+            }
+
+            if (batonGauche.mode == 'rouge') {
+                this.vitesse += .2;
+            } else {
+                this.vitesse = this.vitesseDefaut;
             }
 
         } else if (this.x + this.taille >= batonDroite.x - batonGauche.largeur / 2 && this.y + this.taille >= batonDroite.y && this.y - this.taille <= batonDroite.y + batonDroite.hauteur) {  // baton droit
 
             this.directionX = Math.abs(this.directionX) * -1;
 
-            this.directionY += batonDroite.ay * .6;
+            if (batonDroite.up) {
+                this.directionY -= .5;
+            }
 
-            if (this.directionY < -.8) {
-                this.directionY = -.8;
+            if (batonDroite.down) {
+                this.directionY += .5;
             }
-            if (this.directionY > .8) {
-                this.directionY = .8;
+
+            if (batonDroite.mode == 'rouge') {
+                this.vitesse += .2;
+            } else {
+                this.vitesse = this.vitesseDefaut;
             }
+        }
+
+        if (this.directionY < -.8) {
+            this.directionY = -.8;
+        }
+        if (this.directionY > .8) {
+            this.directionY = .8;
         }
 
         if (this.y - this.taille <= 0 || this.y + this.taille >= canvasPong.height) {
@@ -84,12 +102,13 @@ class Baton {
 
     constructor(cote, couleur) {
 
+        this.mode = couleur;
         this.largeur = 20;
         this.hauteur = canvasPong.height * .25;
         this.ay = 0;
         this.up = false;
         this.down = false;
-        this.vitesse = 1;
+        this.vitesse = .6;
         this.acceleration = .1;
 
         switch (cote) {
@@ -112,7 +131,7 @@ class Baton {
                 break;
         }
 
-        switch (couleur) {
+        switch (this.mode) {
             case 'bleu':
                 this.couleur = '#009';
                 this.hauteur += canvasPong.height * .08;
@@ -120,7 +139,11 @@ class Baton {
 
             case 'jaune':
                 this.couleur = '#ff0';
-                this.vitesse += 1;
+                this.vitesse += .3;
+                break;
+
+            case 'rouge':
+                this.couleur = '#f00';
                 break;
 
             default:
@@ -164,31 +187,44 @@ class Baton {
     bouger() {
 
         if (this.up) {
-            this.ay -= this.acceleration;
-            if (this.ay < -this.vitesse) {
-                this.ay = -this.vitesse;
-            }
-        } else {
-
+            this.y -= this.vitesse * 1000 / fps;
         }
 
         if (this.down) {
-            this.ay += this.acceleration;
-            if (this.ay > this.vitesse) {
-                this.ay = this.vitesse;
-            }
+            this.y += this.vitesse * 1000 / fps;
         }
 
-        if (!this.up && !this.down) {
-            this.ay = Math.round((this.ay * .8) * 1000) / 1000;
-        }
+        // if (this.up) {
+        //     this.ay -= this.acceleration;
+        //     if (this.ay < -this.vitesse) {
+        //         this.ay = -this.vitesse;
+        //     }
+        // }
 
-        if (this.ay < 0 && this.y > 0) {
-            this.y += this.ay * 1000 / fps;
-        }
+        // if (this.down) {
+        //     this.ay += this.acceleration;
+        //     if (this.ay > this.vitesse) {
+        //         this.ay = this.vitesse;
+        //     }
+        // }
 
-        if (this.ay > 0 && this.y + this.hauteur < canvasPong.height) {
-            this.y += this.ay * 1000 / fps;
+        // if (!this.up && !this.down) {
+        //     this.ay = Math.round((this.ay * .8) * 1000) / 1000;
+        // }
+
+        // if (this.ay < 0 && this.y > 0) {
+        //     this.y += this.ay * 1000 / fps;
+        // }
+
+        // if (this.ay > 0 && this.y + this.hauteur < canvasPong.height) {
+        //     this.y += this.ay * 1000 / fps;
+        // }
+
+        if (this.y < 0) {
+            this.y = 0;
+        }
+        if (this.y + this.hauteur > canvasPong.height) {
+            this.y = canvasPong.height - this.hauteur;
         }
 
         // this.ay = Math.round((this.ay * .9) * 1000) / 1000;
@@ -206,7 +242,7 @@ class Baton {
 
 
 var balle = new Balle(canvasPong.width / 2, canvasPong.height / 2, 1, Math.random() * 2 - 1);
-var batonGauche = new Baton('gauche', 'jaune');
+var batonGauche = new Baton('gauche', 'rouge');
 var batonDroite = new Baton('droite', 'bleu');
 var viesGauche = 10;
 var viesDroite = 10;
