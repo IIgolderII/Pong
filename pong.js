@@ -32,11 +32,15 @@ class Balle {
 
             viesGauche--;
 
+            this.vitesse = this.vitesseDefaut;
+
         } else if (this.x + this.taille >= canvasPong.width) {  // bord droit
 
             this.directionX *= -1;
 
             viesDroite--;
+
+            this.vitesse = this.vitesseDefaut;
 
         } else if (this.x - this.taille <= batonGauche.x + batonGauche.largeur / 2 && this.y + this.taille >= batonGauche.y && this.y - this.taille <= batonGauche.y + batonGauche.hauteur) {  // baton gauche
 
