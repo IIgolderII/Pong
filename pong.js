@@ -55,7 +55,7 @@ class Balle {
             }
 
             if (batonGauche.mode == 'rouge') {
-                this.vitesse += .2;
+                this.vitesse = this.vitesseDefaut + .2;
             } else {
                 this.vitesse = this.vitesseDefaut;
             }
@@ -73,7 +73,7 @@ class Balle {
             }
 
             if (batonDroite.mode == 'rouge') {
-                this.vitesse += .2;
+                this.vitesse = this.vitesseDefaut + .2;
             } else {
                 this.vitesse = this.vitesseDefaut;
             }
